@@ -19,7 +19,7 @@ public class CloudFunctions {
                 .continueWith(new Continuation<HttpsCallableResult, Map<Object, Object>>() {
                     @Override
                     public Map<Object, Object> then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        return (Map<Object, Object>) task.getResult().getData();
+                        return (Map<Object, Object>) task.getResult();
                     }
                 });
     }

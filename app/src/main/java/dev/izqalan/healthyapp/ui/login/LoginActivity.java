@@ -50,12 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = mPasswordEditText.getText().toString();
 
                 // Validate the login information and attempt to log in
-                if (validateLogin(email, password)) {
-                    // Login successful, do something here
-                } else {
-                    // Login failed, display an error message
-                    Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                }
+                validateLogin(email, password);
             }
         });
     }
@@ -65,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        Log.d("LoginExist", currentUser.getEmail().toString());
         updateUI(currentUser);
     }
 
@@ -82,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, "Invalid email or password.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -93,10 +87,12 @@ public class LoginActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser currentUser) {
         if (currentUser != null) {
             // User is signed in, show the main activity or do something else here
+            Log.d("LoginExist", currentUser.getEmail().toString());
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         } else {
             // User is signed out, show the login activity or do something else here
+
         }
     }
 }

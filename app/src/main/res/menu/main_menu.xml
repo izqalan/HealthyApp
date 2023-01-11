@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_profile"
+        android:title="Update profile"
+        android:visible="true"
+        android:icon="@null"/>
+    <item
+        android:id="@+id/menu_logout"
+        android:title="Logout"
+        android:visible="true"
+        android:icon="@null" />
+</menu>
