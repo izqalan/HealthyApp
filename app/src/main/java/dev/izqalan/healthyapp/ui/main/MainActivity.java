@@ -30,6 +30,7 @@ import dev.izqalan.healthyapp.R;
 import dev.izqalan.healthyapp.api.CloudFunctions;
 import dev.izqalan.healthyapp.databinding.ActivityMainBinding;
 import dev.izqalan.healthyapp.ui.login.LoginActivity;
+import dev.izqalan.healthyapp.ui.profile.ProfileUpdate;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -94,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.menu_profile:
-                Toast.makeText(this, "this is profile", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, ProfileUpdate.class);
+                startActivity(intent);
                 break;
 
             default:

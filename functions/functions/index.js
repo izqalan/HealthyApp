@@ -17,7 +17,7 @@ exports.helloWorld = functions.https.onCall(() => {
 exports.updateUserBiodata = functions.https.onCall((data) => {
   const { uid, name, age, weight, height } = data;
   const db = admin.firestore();
-  const userRef = db.collection("users").doc(uid);
+  const userRef = db.collection("biodata").doc(uid);
   return userRef
     .get() // get user biodata
     .then((doc) => {

@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private TextView textView;
+    private TextView tv_name, tv_age, tv_weight, tv_height;
     FirebaseAuth mAuth;
 
     // TODO: Rename and change types of parameters
@@ -80,7 +80,11 @@ public class HomeFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        textView = rootView.findViewById(R.id.textView);
+        tv_name = rootView.findViewById(R.id.tv_name);
+        tv_age = rootView.findViewById(R.id.tv_age);
+        tv_height = rootView.findViewById(R.id.tv_height);
+        tv_weight = rootView.findViewById(R.id.tv_weight);
+
         FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -94,7 +98,11 @@ public class HomeFragment extends Fragment {
                     public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
                         if (task.isSuccessful()){
                             Log.d("user biodata", task.getResult().getData().toString());
-                            textView.setText("user exist");
+                            Map<String, Object> biodata = (Map<String, Object>) task.getResult().getData();
+                            tv_name.setText(biodata.get("name").toString());
+                            tv_age.setText(biodata.get("age").toString());
+                            tv_height.setText(biodata.get("height").toString());
+                            tv_weight.setText(biodata.get("weight").toString());
                         } else {
                             Log.d("cloud functions", "call failed");
                             task.getException().printStackTrace();
