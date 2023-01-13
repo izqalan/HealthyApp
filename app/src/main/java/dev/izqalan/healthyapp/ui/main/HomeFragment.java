@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment {
 
         HashMap<String, String> data = new HashMap<>();
         data.put("uid", currentUser.getUid());
-        Object response = mFunctions.getHttpsCallable("getUserBiodata")
+        mFunctions.getHttpsCallable("getUserBiodata")
                 .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, Object>() {
                     @Override

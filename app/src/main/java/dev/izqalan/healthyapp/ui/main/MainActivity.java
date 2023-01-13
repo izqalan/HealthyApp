@@ -21,9 +21,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import dev.izqalan.healthyapp.R;
@@ -65,6 +67,32 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         });
+
+        FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        HashMap<String, String> data = new HashMap<>();
+        data.put("uid", currentUser.getUid());
+
+        mFunctions.getHttpsCallable("getUserBiodata")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, Object>() {
+                    @Override
+                    public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        if (task.isSuccessful()){
+                            Map<String, Object> biodata = (Map<String, Object>) task.getResult().getData();
+                            if (biodata.size() < 4){
+                                Intent intent = new Intent(getApplicationContext(), ProfileUpdate.class);
+                                startActivity(intent);
+                            }
+                        } else {
+                            Log.d("cloud functions", "call failed");
+                            task.getException().printStackTrace();
+                        }
+                        return task.getResult().getData();
+                    }
+                });
+
     }
 
     private void replaceFragment(Fragment fragment){

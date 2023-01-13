@@ -93,10 +93,12 @@ public class ProfileUpdate extends AppCompatActivity {
 
                                     builder.setMessage(response.get("message").toString());
                                     builder.create();
+                                    builder.show();
 
                                 } else {
                                     builder.setMessage(task.getException().getMessage());
                                     builder.create();
+                                    builder.show();
                                 }
                                 return task.getResult().getData();
                             }
