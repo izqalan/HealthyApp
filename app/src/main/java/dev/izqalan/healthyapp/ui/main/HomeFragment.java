@@ -1,5 +1,6 @@
 package dev.izqalan.healthyapp.ui.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Continuation;
@@ -22,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.izqalan.healthyapp.R;
+import dev.izqalan.healthyapp.ui.bmi.InsertBmi;
+import dev.izqalan.healthyapp.ui.bp.InsertBP;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +40,7 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private TextView tv_name, tv_age, tv_weight, tv_height;
     FirebaseAuth mAuth;
-
+    private Button openbp,openbmi;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -84,7 +88,23 @@ public class HomeFragment extends Fragment {
         tv_age = rootView.findViewById(R.id.tv_age);
         tv_height = rootView.findViewById(R.id.tv_height);
         tv_weight = rootView.findViewById(R.id.tv_weight);
+        openbp = rootView.findViewById(R.id.open_bp);
+        openbmi=rootView.findViewById(R.id.open_bmi);
 
+        openbmi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), InsertBmi.class);
+                startActivity(intent);
+            }
+        });
+        openbp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), InsertBP.class);
+                startActivity(intent);
+            }
+        });
         FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -112,6 +132,8 @@ public class HomeFragment extends Fragment {
                 });
 
         return rootView;
+
+
     }
 
 
