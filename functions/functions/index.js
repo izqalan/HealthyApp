@@ -7,7 +7,7 @@ admin.initializeApp();
 // // https://firebase.google.com/docs/functions/get-started
 //
 exports.helloWorld = functions.https.onCall(() => {
-  functions.logger.info("Hello logs!", {structuredData: true});
+  functions.logger.info("Hello logs!", { structuredData: true });
   response.send({
     message: "Hello from Firebase!",
   });
@@ -31,13 +31,13 @@ exports.updateUserBiodata = functions.https.onCall((data) => {
     }
     )
     .then(() => {
-      return { 
+      return {
         message: "User biodata updated successfully",
         name,
         age,
         weight,
         height
-       };
+      };
     }
     )
     .catch((error) => {
@@ -78,9 +78,9 @@ exports.addUserBmi = functions.https.onCall((data) => {
   return userRef
     .add({ height, weight, calculated, created_at: timestamp })
     .then(() => {
-      return { 
+      return {
         message: "User bmi added successfully",
-        bmi: calculated 
+        bmi: calculated
       };
     })
     .catch((error) => {
@@ -111,7 +111,7 @@ exports.getUserBmiHistory = functions.https.onCall((data) => {
     .catch((error) => {
       return { error };
     });
-  });
+});
 
 // add user blood pressure reading to collectiontion history > blood pressure > user id collection
 exports.addUserBloodPressure = functions.https.onCall((data) => {
@@ -122,9 +122,9 @@ exports.addUserBloodPressure = functions.https.onCall((data) => {
   return userRef
     .add({ sys, dia, bp, created_at: timestamp })
     .then(() => {
-      return { 
+      return {
         message: "User blood pressure added successfully",
-     };
+      };
     })
     .catch((error) => {
       return { error };
@@ -154,4 +154,121 @@ exports.getUserBloodPressureHistory = functions.https.onCall((data) => {
     .catch((error) => {
       return { error };
     });
-  });
+});
+
+exports.getDisease = functions.https.onCall((data) => {
+  const { symptoms } = data;
+
+  // get the score for COVID19
+  function getCovid19Score(symptoms) {
+    let score = 0;
+    if (symptoms.includes('Fever or chills')) {
+      score++;
+    }
+    if (symptoms.includes('Continuous cough')) {
+      score++;
+    }
+    if (symptoms.includes('Fatigue')) {
+      score++;
+    }
+    if (symptoms.includes('Loss of taste or smell')) {
+      score++;
+    }
+    if (symptoms.includes('Shortness of breath or difficulty breathing')) {
+      score++;
+    }
+    if (symptoms.includes('Sore throat')) {
+      score++;
+    }
+    return score;
+  }
+
+  // get the score for TB
+  function getTbScore(symptoms) {
+    let score = 0;
+    if (symptoms.includes('Persistent cough (last more than 2 weeks)')) {
+      score++;
+    }
+    if (symptoms.includes('Cough with blood in sputum')) {
+      score++;
+    }
+    if (symptoms.includes('Fever for more than 2 weeks')) {
+      score++;
+    }
+    if (symptoms.includes('Pain in chest')) {
+      score++;
+    }
+    if (symptoms.includes('Weight loss')) {
+      score++;
+    }
+    if (symptoms.includes('Loss of appetite')) {
+      score++;
+    }
+    return score;
+  }
+
+  // get the score for DENGUE
+  function getDengueScore(symptoms) {
+    let score = 0;
+    if (symptoms.includes('Sudden onset very high fever')) {
+      score++;
+    }
+    if (symptoms.includes('Severe headache')) {
+      score++;
+    }
+    if (symptoms.includes('Muscles and joints become painful')) {
+      score++;
+    }
+    if (symptoms.includes('Skin rashes')) {
+      score++;
+    }
+    if (symptoms.includes('Fatigue')) {
+      score++;
+    }
+    if (symptoms.includes('Vomiting')) {
+      score++;
+    }
+    return score;
+  }
+
+  if (symptoms.length > 0) {
+    // get the disease with the highest score
+    let disease = {
+      name: '',
+      score: 0
+    };
+
+    // get the score for each disease
+    let covid19Score = getCovid19Score(symptoms);
+    let tbScore = getTbScore(symptoms);
+    let dengueScore = getDengueScore(symptoms);
+
+    // get the disease with the highest score
+    if (covid19Score > disease.score) {
+      disease.name = 'COVID19';
+      disease.score = covid19Score;
+    }
+    if (tbScore > disease.score) {
+      disease.name = 'TB';
+      disease.score = tbScore;
+    }
+    if (dengueScore > disease.score) {
+      disease.name = 'DENGUE';
+      disease.score = dengueScore;
+    }
+
+    return {
+      disease: disease.name,
+      score: disease.score,
+      status: 'success',
+      message: 'Disease found'
+    };
+  } else {
+    return {
+      status: 'error',
+      message: 'No symptoms selected'
+    };
+  }
+
+
+});
