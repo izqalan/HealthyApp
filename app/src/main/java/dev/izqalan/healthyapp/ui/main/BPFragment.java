@@ -2,65 +2,93 @@ package dev.izqalan.healthyapp.ui.main;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import dev.izqalan.healthyapp.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BPFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import dev.izqalan.healthyapp.adapter.BpAdapter;
+import dev.izqalan.healthyapp.models.BPModel;
+
+
+
 public class BPFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    RecyclerView recyclerView;
+    BpAdapter adapter;
+    ArrayList<BPModel> historyList;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public BPFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BPFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BPFragment newInstance(String param1, String param2) {
-        BPFragment fragment = new BPFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_b_p, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_b_p, container, false);
+
+        FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        recyclerView = rootView.findViewById(R.id.bpRecyclerView);
+        historyList = new ArrayList<>();
+        adapter = new BpAdapter(rootView.getContext(), historyList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+
+        HashMap<String, String> data = new HashMap<>();
+        data.put("uid", currentUser.getUid());
+        mFunctions.getHttpsCallable("getUserBloodPressureHistory")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, Object>() {
+                    @Override
+                    public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        if (task.isSuccessful()){
+                            Log.d("user bp history", task.getResult().getData().toString());
+                            ArrayList<Map<String, Object>> history = (ArrayList<Map<String, Object>>) task.getResult().getData();
+                            for (Map<String, Object> item : history){
+                                String d = item.get("sys").toString();
+                                String s = item.get("dia").toString();
+                                String p = item.get("bp").toString();
+                                BPModel bpModel = new BPModel(s,d,p);
+                                historyList.add(bpModel);
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Log.d("cloud functions", "call failed");
+                            task.getException().printStackTrace();
+                        }
+                        return task.getResult().getData();
+                    }
+                });
+
+        return rootView;
     }
 }

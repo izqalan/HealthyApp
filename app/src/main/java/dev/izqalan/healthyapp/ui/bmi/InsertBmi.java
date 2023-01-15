@@ -60,7 +60,7 @@ public class InsertBmi extends AppCompatActivity {
                                 if (task.isSuccessful()){
                                     Map<String, Object> response = (Map<String, Object>) task.getResult().getData();
 
-                                    builder.setMessage(response.get("message").toString());
+                                    builder.setMessage(response.get("bmi").toString());
                                     builder.create();
                                     builder.show();
 
