@@ -46,5 +46,6 @@
         android:layout_height="wrap_content"
         android:onClick="submitInput"
         android:padding="8dp"
+        android:textColor="@color/white"
         android:text="Save Data" />
 </LinearLayout>
