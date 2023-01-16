@@ -13,4 +13,8 @@
         android:id="@+id/menu_bp"
         android:icon="@drawable/ic_baseline_heart_broken_24"
         android:title="BP" />
+    <item
+        android:id="@+id/menu_symptom"
+        android:icon="@drawable/ic_baseline_health_and_safety_24"
+        android:title="Symptoms" />
 </menu>
