@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("nav", "pressed bp");
                     replaceFragment(new BPFragment());
                     break;
+                case R.id.menu_symptom:
+                    Log.d("nav", "pressed symptom");
+                    replaceFragment(new SymptomFragment());
+                    break;
             }
             return true;
         });
